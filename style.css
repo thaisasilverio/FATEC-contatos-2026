@@ -1,5 +1,100 @@
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
+
+body{
+  background: #f1f5f9;
+  padding: 30px;
+}
+
+.container{
+  max-width: 1200px;
+  margin: auto;
+}
+
+.card-form,
+.lista{
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+h1, h2{
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.campo{
+  margin-bottom: 15px;
+}
+
+label{
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input{
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button{
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+}
+
+button:hover{
+  background: #1d4ed8;
+}
+
+.card-contato{
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.card-contato img{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.info{
+  flex: 1;
+}
+
+.info p{
+  margin-bottom: 5px;
+}
+
+.botoes{
+  display: flex;
+  gap: 10px;
+}
+
+.btn-editar{
+  background: #f59e0b;
+}
+
+.btn-excluir{
+  background: #dc2626;
+}
+
