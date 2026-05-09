@@ -11,6 +11,7 @@ const listaContatos = document.getElementById("listaContatos")
 const inputFoto = document.getElementById("preview-input")
 const previewImg = document.getElementById("preview-image")
 
+
 async function carregarContatos() {
   try {
     const contatos = await getContatos()
@@ -55,20 +56,30 @@ async function carregarContatos() {
 
       const botoes = document.createElement("section")
       botoes.classList.add("botoes")
+      const btnEditar = document.createElement("button")
+      btnEditar.textContent = "Editar"
+      btnEditar.classList.add("btn-editar")
 
-      // BOTÃO EDITAR REMOVIDO
+      btnEditar.addEventListener("click", () => {
+        document.getElementById("id").value = contato.id
+        document.getElementById("nome").value = contato.nome
+        document.getElementById("celular").value = contato.celular
+        document.getElementById("email").value = contato.email
+        document.getElementById("endereco").value = contato.endereco
+        document.getElementById("cidade").value = contato.cidade
+        previewImg.src = contato.foto || "./img/upload-icon.svg"
+      })
 
       const btnExcluir = document.createElement("button")
       btnExcluir.textContent = "Excluir"
       btnExcluir.classList.add("btn-excluir")
-
       btnExcluir.addEventListener("click", async () => {
         await deletarContato(contato.id)
         carregarContatos()
       })
 
+      botoes.appendChild(btnEditar)
       botoes.appendChild(btnExcluir)
-
       card.appendChild(foto)
       card.appendChild(info)
       card.appendChild(botoes)
@@ -101,7 +112,6 @@ form.addEventListener("submit", async (event) => {
   const id = document.getElementById("id").value
   const file = inputFoto.files[0]
   let fotoBase64 = ""
-
   if (file) {
     fotoBase64 = await converterBase64(file)
   }
