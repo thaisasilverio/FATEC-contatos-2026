@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <title>Contatos - atividade</title>
 </head>
-
 <body>
     <main class="container">
         <article class="card-form">
@@ -18,28 +16,33 @@
             <form id="formContato">
                 <input type="hidden" id="id">
                 <section class="campo">
-                    <label>Nome</label>
+                    <label for="nome">Nome</label>
                     <input type="text" id="nome" required>
                 </section>
                 <section class="campo">
-                    <label>Celular</label>
+                    <label for="celular">Celular</label>
                     <input type="text" id="celular" required>
                 </section>
                 <section class="campo">
-                    <label>Email</label>
+                    <label for="email">Email</label>
                     <input type="email" id="email" required>
                 </section>
                 <section class="campo">
-                    <label>Endereço</label>
+                    <label for="endereco">Endereço</label>
                     <input type="text" id="endereco" required>
                 </section>
                 <section class="campo">
-                    <label>Cidade</label>
+                    <label for="cidade">Cidade</label>
                     <input type="text" id="cidade" required>
                 </section>
-                <div class="campo">
-                    <label for="foto">Foto</label>
-                    <input type="url" id="foto">
+                <div class="preview-container">
+                    <div class="preview-container">
+                        
+                        <label class="preview-label" for="preview-input">
+                            <img id="preview-image" class="preview-image" src="./img/upload-icon.svg" alt="Clique para enviar imagem" width="200px">
+                            <input id="preview-input" class="preview-input" type="file" accept="image/*">
+                        </label>
+                    </div>
                 </div>
                 <footer class="acoes">
                     <button type="submit">Salvar Contato</button>

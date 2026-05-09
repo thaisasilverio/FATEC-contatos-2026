@@ -8,18 +8,21 @@ import {
 const form = document.getElementById("formContato")
 const listaContatos = document.getElementById("listaContatos")
 
-async function carregarContatos() {
+const inputFoto = document.getElementById("preview-input")
+const previewImg = document.getElementById("preview-image")
 
+async function carregarContatos() {
   try {
     const contatos = await getContatos()
-    listaContatos.textContent = ""
-    contatos.forEach(contato => {
 
+    listaContatos.textContent = ""
+
+    contatos.forEach(contato => {
       const card = document.createElement("article")
       card.classList.add("card-contato")
 
       const foto = document.createElement("img")
-      foto.src = contato.foto
+      foto.src = contato.foto || "./img/upload-icon.svg"
       foto.alt = contato.nome
 
       const info = document.createElement("section")
@@ -55,15 +58,15 @@ async function carregarContatos() {
       const btnEditar = document.createElement("button")
       btnEditar.textContent = "Editar"
       btnEditar.classList.add("btn-editar")
-      btnEditar.addEventListener("click", () => {
 
+      btnEditar.addEventListener("click", () => {
         document.getElementById("id").value = contato.id
         document.getElementById("nome").value = contato.nome
         document.getElementById("celular").value = contato.celular
-        document.getElementById("foto").value = contato.foto
         document.getElementById("email").value = contato.email
         document.getElementById("endereco").value = contato.endereco
         document.getElementById("cidade").value = contato.cidade
+        previewImg.src = contato.foto || "./img/upload-icon.svg"
       })
 
       const btnExcluir = document.createElement("button")
@@ -86,13 +89,36 @@ async function carregarContatos() {
     console.log(error)
   }
 }
+
+function converterBase64(arquivo) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(arquivo)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+  })
+}
+
+inputFoto.addEventListener("change", (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  previewImg.src = URL.createObjectURL(file)
+})
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault()
+
   const id = document.getElementById("id").value
+  const file = inputFoto.files[0]
+  let fotoBase64 = ""
+  if (file) {
+    fotoBase64 = await converterBase64(file)
+  }
+
   const contato = {
     nome: document.getElementById("nome").value,
     celular: document.getElementById("celular").value,
-    foto: document.getElementById("foto").value,
+    foto: fotoBase64,
     email: document.getElementById("email").value,
     endereco: document.getElementById("endereco").value,
     cidade: document.getElementById("cidade").value
@@ -104,22 +130,15 @@ form.addEventListener("submit", async (event) => {
     } else {
       await criarContato(contato)
     }
-    
+
     form.reset()
     document.getElementById("id").value = ""
+    previewImg.src = "./img/upload-icon.svg"
     carregarContatos()
+
   } catch (error) {
     console.log(error)
   }
 })
 
 carregarContatos()
-
-function converterBase64(arquivo) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(arquivo)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = error => reject(error)
-  })
-}
