@@ -35,17 +35,15 @@
                     <label for="cidade">Cidade</label>
                     <input type="text" id="cidade" required>
                 </section>
-                <div class="preview-container">
-                    <div class="preview-container">
-                        
-                        <label class="preview-label" for="preview-input">
-                            <img id="preview-image" class="preview-image" src="./img/upload-icon.svg" alt="Clique para enviar imagem" width="200px">
-                            <input id="preview-input" class="preview-input" type="file" accept="image/*">
-                        </label>
-                    </div>
-                </div>
+                <!-- Preview da imagem -->
+                <section class="preview-container">
+                    <input id="preview-input" class="preview-input" type="file" accept="image/*" hidden>
+                    <label class="preview-label" for="preview-input">
+                        <img id="preview-image" class="preview-image" src="./img/upload-icon.svg" alt="Clique para enviar imagem" width="200px">
+                    </label>
+                </section>
                 <footer class="acoes">
-                    <button type="submit">Salvar Contato</button>
+                    <button type="submit"> Salvar Contato</button>
                 </footer>
             </form>
         </article>
@@ -57,5 +55,4 @@
         </article>
     </main>
 </body>
-
 </html>

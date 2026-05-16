@@ -1,8 +1,11 @@
+'use strict'
+
 import {
   getContatos,
   criarContato,
   atualizarContato,
-  deletarContato
+  deletarContato,
+  uploadParaCloudinary
 } from "./contatos.js"
 
 const form = document.getElementById("formContato")
@@ -11,14 +14,16 @@ const listaContatos = document.getElementById("listaContatos")
 const inputFoto = document.getElementById("preview-input")
 const previewImg = document.getElementById("preview-image")
 
-
 async function carregarContatos() {
+
   try {
+
     const contatos = await getContatos()
 
-    listaContatos.textContent = ""
+    listaContatos.replaceChildren()
 
     contatos.forEach(contato => {
+
       const card = document.createElement("article")
       card.classList.add("card-contato")
 
@@ -47,99 +52,151 @@ async function carregarContatos() {
       const cidade = document.createElement("p")
       cidade.textContent = `Cidade: ${contato.cidade}`
 
-      info.appendChild(id)
-      info.appendChild(nome)
-      info.appendChild(celular)
-      info.appendChild(email)
-      info.appendChild(endereco)
-      info.appendChild(cidade)
+      info.append(
+        id,
+        nome,
+        celular,
+        email,
+        endereco,
+        cidade
+      )
 
       const botoes = document.createElement("section")
       botoes.classList.add("botoes")
+
+      // BOTÃO EDITAR
       const btnEditar = document.createElement("button")
       btnEditar.textContent = "Editar"
       btnEditar.classList.add("btn-editar")
 
       btnEditar.addEventListener("click", () => {
+
         document.getElementById("id").value = contato.id
         document.getElementById("nome").value = contato.nome
         document.getElementById("celular").value = contato.celular
         document.getElementById("email").value = contato.email
         document.getElementById("endereco").value = contato.endereco
         document.getElementById("cidade").value = contato.cidade
+
         previewImg.src = contato.foto || "./img/upload-icon.svg"
+
       })
 
+      // BOTÃO EXCLUIR
       const btnExcluir = document.createElement("button")
       btnExcluir.textContent = "Excluir"
       btnExcluir.classList.add("btn-excluir")
+
       btnExcluir.addEventListener("click", async () => {
-        await deletarContato(contato.id)
-        carregarContatos()
+
+        try {
+
+          await deletarContato(contato.id)
+
+          carregarContatos()
+
+        } catch (error) {
+
+          console.log(error)
+
+        }
+
       })
 
-      botoes.appendChild(btnEditar)
-      botoes.appendChild(btnExcluir)
-      card.appendChild(foto)
-      card.appendChild(info)
-      card.appendChild(botoes)
+      botoes.append(btnEditar, btnExcluir)
+
+      card.append(foto, info, botoes)
+
       listaContatos.appendChild(card)
+
     })
 
   } catch (error) {
+
     console.log(error)
+
   }
+
 }
 
-function converterBase64(arquivo) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(arquivo)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = reject
-  })
-}
+// PREVIEW DA IMAGEM
+inputFoto.addEventListener("change", (event) => {
 
-inputFoto.addEventListener("change", (e) => {
-  const file = e.target.files[0]
+  const file = event.target.files[0]
+
   if (!file) return
+
   previewImg.src = URL.createObjectURL(file)
+
 })
 
+// SALVAR CONTATO
 form.addEventListener("submit", async (event) => {
+
   event.preventDefault()
 
-  const id = document.getElementById("id").value
-  const file = inputFoto.files[0]
-  let fotoBase64 = ""
-  if (file) {
-    fotoBase64 = await converterBase64(file)
-  }
-
-  const contato = {
-    nome: document.getElementById("nome").value,
-    celular: document.getElementById("celular").value,
-    foto: fotoBase64,
-    email: document.getElementById("email").value,
-    endereco: document.getElementById("endereco").value,
-    cidade: document.getElementById("cidade").value
-  }
-
   try {
-    if (id) {
-      await atualizarContato(id, contato)
-    } else {
-      await criarContato(contato)
+
+    const id = document.getElementById("id").value
+
+    const file = inputFoto.files[0]
+
+let foto = previewImg.src
+
+if (file) {
+
+  const imagemCloudinary = await uploadParaCloudinary(file)
+
+  if (imagemCloudinary) {
+
+    foto = imagemCloudinary
+
+  }
+
     }
 
+    const contato = {
+
+      nome: document.getElementById("nome").value,
+      celular: document.getElementById("celular").value,
+      email: document.getElementById("email").value,
+      endereco: document.getElementById("endereco").value,
+      cidade: document.getElementById("cidade").value,
+      foto: foto
+
+    }
+
+    // EDITAR
+   if (id) {
+
+  await atualizarContato(id, contato)
+
+  alert("Contato atualizado com sucesso!")
+
+} else {
+
+  await criarContato(contato)
+
+  alert("Contato cadastrado com sucesso!")
+
+}
+    // LIMPAR FORM
     form.reset()
+
     document.getElementById("id").value = ""
+
     previewImg.src = "./img/upload-icon.svg"
+
     carregarContatos()
 
   } catch (error) {
+
     console.log(error)
+
+    alert("Erro ao salvar contato")
+
   }
+
 })
 
 carregarContatos()
