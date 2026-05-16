@@ -10,9 +10,37 @@ import {
 
 const form = document.getElementById("formContato")
 const listaContatos = document.getElementById("listaContatos")
-
 const inputFoto = document.getElementById("preview-input")
 const previewImg = document.getElementById("preview-image")
+
+const loginTela = document.getElementById("loginTela")
+const sistema = document.getElementById("sistema")
+const btnLogin = document.getElementById("btnLogin")
+
+sistema.style.display = "none"
+
+function preencherFormulario(contato) {
+
+  document.getElementById("id").value = contato.id
+  document.getElementById("nome").value = contato.nome
+  document.getElementById("celular").value = contato.celular
+  document.getElementById("email").value = contato.email
+  document.getElementById("endereco").value = contato.endereco
+  document.getElementById("cidade").value = contato.cidade
+
+  previewImg.src = contato.foto || "./img/upload-icon.svg"
+
+}
+
+function criarParagrafo(texto) {
+
+  const p = document.createElement("p")
+
+  p.textContent = texto
+
+  return p
+
+}
 
 async function carregarContatos() {
 
@@ -25,81 +53,47 @@ async function carregarContatos() {
     contatos.forEach(contato => {
 
       const card = document.createElement("article")
-      card.classList.add("card-contato")
-
       const foto = document.createElement("img")
+      const info = document.createElement("section")
+      const botoes = document.createElement("section")
+
+      card.className = "card-contato"
+      info.className = "info"
+      botoes.className = "botoes"
+
       foto.src = contato.foto || "./img/upload-icon.svg"
       foto.alt = contato.nome
 
-      const info = document.createElement("section")
-      info.classList.add("info")
-
-      const id = document.createElement("p")
-      id.textContent = `ID: ${contato.id}`
-
-      const nome = document.createElement("p")
-      nome.textContent = `Nome: ${contato.nome}`
-
-      const celular = document.createElement("p")
-      celular.textContent = `Celular: ${contato.celular}`
-
-      const email = document.createElement("p")
-      email.textContent = `Email: ${contato.email}`
-
-      const endereco = document.createElement("p")
-      endereco.textContent = `Endereço: ${contato.endereco}`
-
-      const cidade = document.createElement("p")
-      cidade.textContent = `Cidade: ${contato.cidade}`
-
       info.append(
-        id,
-        nome,
-        celular,
-        email,
-        endereco,
-        cidade
+        criarParagrafo(`ID: ${contato.id}`),
+        criarParagrafo(`Nome: ${contato.nome}`),
+        criarParagrafo(`Celular: ${contato.celular}`),
+        criarParagrafo(`Email: ${contato.email}`),
+        criarParagrafo(`Endereço: ${contato.endereco}`),
+        criarParagrafo(`Cidade: ${contato.cidade}`)
       )
 
-      const botoes = document.createElement("section")
-      botoes.classList.add("botoes")
-
-      // BOTÃO EDITAR
       const btnEditar = document.createElement("button")
+
       btnEditar.textContent = "Editar"
-      btnEditar.classList.add("btn-editar")
+      btnEditar.className = "btn-editar"
 
       btnEditar.addEventListener("click", () => {
-
-        document.getElementById("id").value = contato.id
-        document.getElementById("nome").value = contato.nome
-        document.getElementById("celular").value = contato.celular
-        document.getElementById("email").value = contato.email
-        document.getElementById("endereco").value = contato.endereco
-        document.getElementById("cidade").value = contato.cidade
-
-        previewImg.src = contato.foto || "./img/upload-icon.svg"
-
+        preencherFormulario(contato)
       })
 
-      // BOTÃO EXCLUIR
       const btnExcluir = document.createElement("button")
+
       btnExcluir.textContent = "Excluir"
-      btnExcluir.classList.add("btn-excluir")
+      btnExcluir.className = "btn-excluir"
 
       btnExcluir.addEventListener("click", async () => {
 
-        try {
+        await deletarContato(contato.id)
 
-          await deletarContato(contato.id)
+        alert("Contato excluído com sucesso!")
 
-          carregarContatos()
-
-        } catch (error) {
-
-          console.log(error)
-
-        }
+        carregarContatos()
 
       })
 
@@ -119,39 +113,51 @@ async function carregarContatos() {
 
 }
 
-// PREVIEW DA IMAGEM
-inputFoto.addEventListener("change", (event) => {
+// PREVIEW IMAGEM
+inputFoto.addEventListener("change", event => {
 
   const file = event.target.files[0]
 
-  if (!file) return
+  if (file) {
 
-  previewImg.src = URL.createObjectURL(file)
+    previewImg.src = URL.createObjectURL(file)
+
+  }
 
 })
 
+// LOGIN
+function abrirSistema() {
+
+  loginTela.style.display = "none"
+
+  sistema.style.display = "block"
+
+}
+
+btnLogin.addEventListener("click", abrirSistema)
+
 // SALVAR CONTATO
-form.addEventListener("submit", async (event) => {
+form.addEventListener("submit", async event => {
 
   event.preventDefault()
 
   try {
 
     const id = document.getElementById("id").value
-
     const file = inputFoto.files[0]
 
-let foto = previewImg.src
+    let foto = previewImg.src
 
-if (file) {
+    if (file) {
 
-  const imagemCloudinary = await uploadParaCloudinary(file)
+      const imagemCloudinary = await uploadParaCloudinary(file)
 
-  if (imagemCloudinary) {
+      if (imagemCloudinary) {
 
-    foto = imagemCloudinary
+        foto = imagemCloudinary
 
-  }
+      }
 
     }
 
@@ -162,30 +168,29 @@ if (file) {
       email: document.getElementById("email").value,
       endereco: document.getElementById("endereco").value,
       cidade: document.getElementById("cidade").value,
-      foto: foto
+      foto
 
     }
 
-    // EDITAR
-   if (id) {
+    if (id) {
 
-  await atualizarContato(id, contato)
+      await atualizarContato(id, contato)
 
-  alert("Contato atualizado com sucesso!")
+      alert("Contato atualizado com sucesso!")
 
-} else {
+    } else {
 
-  await criarContato(contato)
+      await criarContato(contato)
 
-  alert("Contato cadastrado com sucesso!")
+      alert("Contato cadastrado com sucesso!")
 
-}
-    // LIMPAR FORM
+    }
+
     form.reset()
 
-    document.getElementById("id").value = ""
-
     previewImg.src = "./img/upload-icon.svg"
+
+    document.getElementById("id").value = ""
 
     carregarContatos()
 
